@@ -11,6 +11,10 @@ public class Menu extends AbstractBaseEntity {
     public Menu() {
     }
 
+    public Menu(Restaurant restaurant, List<Dish> dishes) {
+        this(null, restaurant, dishes);
+    }
+
     public Menu(Integer id, Restaurant restaurant, List<Dish> dishes) {
         super(id);
         this.restaurant = restaurant;

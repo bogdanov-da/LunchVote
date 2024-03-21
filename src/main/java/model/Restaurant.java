@@ -8,6 +8,10 @@ public class Restaurant extends AbstractNameEntity {
     public Restaurant() {
     }
 
+    public Restaurant(String name, List<Menu> menus) {
+        this(null, name, menus);
+    }
+
     public Restaurant(Integer id, String name, List<Menu> menus) {
         super(id, name);
         this.menus = menus;
