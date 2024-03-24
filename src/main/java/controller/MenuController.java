@@ -1,36 +1,52 @@
 package controller;
 
-import model.Dish;
 import model.Menu;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import repository.MenuRepository;
 import repository.RestaurantRepository;
+import to.Mapper;
+import to.MenuTo;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
+@RequestMapping("/restaurants/{restaurantId}/menus")
 public class MenuController {
-    private MenuRepository menuRepository;
-    private RestaurantRepository restaurantRepository;
+    private final MenuRepository menuRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final Mapper mapper;
 
-    public Menu create(int restaurantId) {
+    @Autowired
+    public MenuController(MenuRepository menuRepository, RestaurantRepository restaurantRepository, Mapper mapper) {
+        this.menuRepository = menuRepository;
+        this.restaurantRepository = restaurantRepository;
+        this.mapper = mapper;
+    }
+
+    @PostMapping
+    public MenuTo create(@RequestBody MenuTo menuTo, @PathVariable int restaurantId) {
         Menu menu = new Menu();
         menu.setRestaurant(restaurantRepository.getReferenceById(restaurantId));
         menuRepository.save(menu);
-        return menu;
+        return mapper.toTo(menu);
     }
 
-    public void update(int restaurantId, List<Dish> dishes) {
-        Menu menu = new Menu(restaurantRepository.getReferenceById(restaurantId), dishes);
+    @PutMapping
+    public void update(@RequestBody MenuTo menuTo, @PathVariable int restaurantId) {
+        Menu menu = menuRepository.getByDate(restaurantId, LocalDate.now()).orElseThrow();
+        menu.setDishes(menuTo.getDishes());
         menuRepository.save(menu);
     }
 
-    public Menu get(int restaurantId, LocalDate date) {
-        return menuRepository.getByDate(restaurantId, date).orElseThrow();
+    @GetMapping("/{restaurantId}")
+    public MenuTo get(@PathVariable int restaurantId) {
+        return mapper.toTo(menuRepository.getByDate(restaurantId, LocalDate.now()).orElseThrow());
     }
 
-    public void delete(int id) {
-        menuRepository.deleteById(id);
+    @DeleteMapping("/{restaurantId}")
+    public void delete(@PathVariable int restaurantId) {
+        Menu menu = menuRepository.getByDate(restaurantId, LocalDate.now()).orElseThrow();
+        menuRepository.delete(menu);
     }
 }

@@ -1,6 +1,15 @@
 package model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+@Entity
+@Table(name = "dish")
 public class Dish extends AbstractNameEntity {
+    @Column(name = "price", nullable = false)
+    @Positive
+    @NotNull
     private double price;
 
     public Dish() {

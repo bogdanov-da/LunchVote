@@ -50,7 +50,7 @@ CREATE TABLE dish
     price   INTEGER NOT NULL,
     FOREIGN KEY (menu_id) REFERENCES menu (id) ON DELETE CASCADE
 );
-CREATE UNIQUE INDEX dish_unique_menu_name_idx ON dish (menu_id, name);
+CREATE UNIQUE INDEX dish_unique_menu_id_name_idx ON dish (menu_id, name);
 
 CREATE TABLE vote
 (

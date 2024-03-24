@@ -1,27 +1,20 @@
 package model;
 
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
+@Entity
+@Table(name = "restaurant", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"}, name = "restaurant_unique_name_idx")})
 public class Restaurant extends AbstractNameEntity {
-    private List<Menu> menus;
-
     public Restaurant() {
     }
 
-    public Restaurant(String name, List<Menu> menus) {
-        this(null, name, menus);
+    public Restaurant(String name) {
+        this(null, name);
     }
 
-    public Restaurant(Integer id, String name, List<Menu> menus) {
+    public Restaurant(Integer id, String name) {
         super(id, name);
-        this.menus = menus;
-    }
-
-    public List<Menu> getMenus() {
-        return menus;
-    }
-
-    public void setMenus(List<Menu> menus) {
-        this.menus = menus;
     }
 }
