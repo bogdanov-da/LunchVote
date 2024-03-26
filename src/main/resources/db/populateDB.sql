@@ -26,7 +26,7 @@ INSERT INTO menu (restaurant_id, date)
 VALUES (100003, CURRENT_DATE),
        (100004, CURRENT_DATE),
        (100005, CURRENT_DATE),
-       (100006, CURRENT_DATE),
+       (100006, '2023-12-30'),
        (100006, '2023-12-31');
 
 INSERT INTO dish (menu_id, name, price)
