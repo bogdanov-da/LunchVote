@@ -1,5 +1,7 @@
 package org.bda.voteapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
@@ -24,20 +26,20 @@ public class Vote extends AbstractBaseEntity {
 
     @NotNull
     @Column(name = "date", nullable = false)
-    private LocalDate date = LocalDate.now();
+    private LocalDate date;
 
     public Vote() {
     }
 
-    public Vote(User user, Restaurant restaurant, LocalDate date) {
-        this(null, user, restaurant, date);
+    public Vote(User user, Restaurant restaurant) {
+        this(null, user, restaurant);
     }
 
-    public Vote(Integer id, User user, Restaurant restaurant, LocalDate date) {
+    public Vote(Integer id, User user, Restaurant restaurant) {
         super(id);
         this.user = user;
         this.restaurant = restaurant;
-        this.date = date;
+        this.date = LocalDate.now();
     }
 
     public User getUser() {
@@ -62,5 +64,15 @@ public class Vote extends AbstractBaseEntity {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "Vote{" +
+                "user=" + user +
+                ", restaurant=" + restaurant +
+                ", date=" + date +
+                ", id=" + id +
+                '}';
     }
 }

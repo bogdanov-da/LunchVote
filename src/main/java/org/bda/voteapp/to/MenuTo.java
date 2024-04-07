@@ -16,9 +16,6 @@ public class MenuTo {
     @NotNull
     private int restaurantId;
 
-    public MenuTo() {
-    }
-
     public MenuTo(int id, List<Dish> dishes, int restaurantId) {
         this.id = id;
         this.dishes = dishes;

@@ -4,42 +4,44 @@ import org.bda.voteapp.model.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.bda.voteapp.repository.RestaurantRepository;
-import org.bda.voteapp.to.Mapper;
-import org.bda.voteapp.to.RestaurantTo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/restaurants")
 public class RestaurantController {
     private final RestaurantRepository restaurantRepository;
-    private final Mapper mapper;
 
     @Autowired
-    public RestaurantController(RestaurantRepository restaurantRepository, Mapper mapper) {
+    public RestaurantController(RestaurantRepository restaurantRepository) {
         this.restaurantRepository = restaurantRepository;
-        this.mapper = mapper;
     }
 
     @GetMapping
-    public List<RestaurantTo> getAll() {
-        return restaurantRepository.findAll().stream().map(mapper :: toTo).toList();
+    public List<Restaurant> getAll() {
+        return restaurantRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    public RestaurantTo get(@PathVariable int id) {
-        return mapper.toTo(restaurantRepository.getReferenceById(id));
+    public Restaurant get(@PathVariable int id) {
+        return restaurantRepository.getReferenceById(id);
+    }
+
+    @GetMapping("/of-day")
+    public Restaurant get() {
+        return restaurantRepository.getMaxVotedRestaurant(LocalDate.now()).orElseThrow();
     }
 
     @PostMapping
-    public Restaurant create(@RequestBody RestaurantTo restaurantTo) {
-        Restaurant restaurant = mapper.toModel(restaurantTo);
+    public Restaurant create(@RequestBody Restaurant restaurant) {
         return restaurantRepository.save(restaurant);
     }
 
     @PutMapping("/{id}")
-    public void update(@RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
-        Restaurant restaurant = mapper.toModel(restaurantTo);
+    public void update(@RequestParam String name, @PathVariable int id) {
+        Restaurant restaurant = restaurantRepository.getReferenceById(id);
+        restaurant.setName(name);
         restaurantRepository.save(restaurant);
     }
 

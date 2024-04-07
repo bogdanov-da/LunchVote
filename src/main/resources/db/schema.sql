@@ -11,11 +11,10 @@ CREATE SEQUENCE global_seq START WITH 100000;
 CREATE TABLE users
 (
     id         INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
-    name       VARCHAR                                  NOT NULL,
-    email      VARCHAR                                  NOT NULL,
-    password   VARCHAR                                  NOT NULL,
-    enabled    BOOL                DEFAULT TRUE         NOT NULL,
-    registered TIMESTAMP           DEFAULT CURRENT_DATE NOT NULL
+    name       VARCHAR   NOT NULL,
+    email      VARCHAR   NOT NULL,
+    password   VARCHAR   NOT NULL,
+    registered TIMESTAMP NOT NULL
 );
 CREATE UNIQUE INDEX user_unique_email_idx ON users (email);
 
@@ -47,7 +46,7 @@ CREATE TABLE dish
 (
     id      INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
     menu_id INTEGER,
-    name    VARCHAR NOT NULL,
+    name    VARCHAR          NOT NULL,
     price   DOUBLE PRECISION NOT NULL,
     FOREIGN KEY (menu_id) REFERENCES menu (id) ON DELETE CASCADE
 );

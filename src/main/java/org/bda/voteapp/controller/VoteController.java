@@ -33,22 +33,28 @@ public class VoteController {
     }
 
     @GetMapping("/{userId}")
-    public VoteTo getCurrent(@PathVariable int userId) {
-        return mapper.toTo(voteRepository.getByDate(LocalDate.now(), userId).orElseThrow());
+    public List<VoteTo> getByUserId(@PathVariable int userId) {
+        return voteRepository.getByUserId(userId).stream().map(mapper::toTo).toList();
     }
 
     @PostMapping
-    public Vote create(@RequestParam int userId, @RequestParam int restaurantId) {
-        Vote vote = new Vote(userRepository.getReferenceById(userId), restaurantRepository.getReferenceById(restaurantId), LocalDate.now());
+    public VoteTo create(@RequestParam int userId, @RequestParam int restaurantId) {
+        Vote vote = new Vote(userRepository.getReferenceById(userId), restaurantRepository.getReferenceById(restaurantId));
         voteRepository.save(vote);
-        return vote;
+        return mapper.toTo(vote);
     }
 
     @PutMapping
     public void update(@RequestParam int userId, @RequestParam int restaurantId) {
-        Vote vote = voteRepository.getByDate(LocalDate.now(), userId).orElseThrow();
-        if(LocalTime.now(Clock.systemDefaultZone()).isBefore(LocalTime.of(11, 0))) {
+        Vote vote = voteRepository.getByDateAndUserId(LocalDate.now(), userId).orElseThrow();
+        if (LocalTime.now(Clock.systemDefaultZone()).isBefore(LocalTime.of(11, 0))) {
             vote.setRestaurant(restaurantRepository.getReferenceById(restaurantId));
+            voteRepository.save(vote);
         } else throw new RuntimeException();
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id) {
+        voteRepository.deleteById(id);
     }
 }

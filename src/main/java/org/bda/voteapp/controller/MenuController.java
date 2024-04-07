@@ -10,6 +10,7 @@ import org.bda.voteapp.repository.RestaurantRepository;
 import org.bda.voteapp.to.Mapper;
 import org.bda.voteapp.to.MenuTo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -47,12 +48,12 @@ public class MenuController {
 
     @GetMapping
     public List<MenuTo> getAll(@PathVariable int restaurantId) {
-        return menuRepository.getAll(restaurantId).stream().map(mapper::toTo).toList();
+        return menuRepository.getAllByRestaurantId(restaurantId).stream().map(mapper::toTo).toList();
     }
 
-    @GetMapping("/{menuId}")
-    public MenuTo getAll(@PathVariable int restaurantId, @PathVariable int menuId) {
-        Menu menu = menuRepository.getReferenceById(menuId);
+    @GetMapping("/today")
+    public MenuTo getTodayMenu(@PathVariable int restaurantId) {
+        Menu menu = menuRepository.getByDateAndRestaurantId(LocalDate.now(), restaurantId).orElseThrow();
         return mapper.toTo(menu);
     }
 

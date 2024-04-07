@@ -6,10 +6,10 @@ DELETE FROM user_role;
 DELETE FROM users;
 ALTER SEQUENCE global_seq RESTART WITH 100000;
 
-INSERT INTO users (name, email, password)
-VALUES ('User', 'user@gmail.com', 'user_password'),
-       ('Admin', 'admin@gmail.com', 'admin_password'),
-       ('Guest', 'guest@gmail.com', 'guest_password');
+INSERT INTO users (name, email, password, registered)
+VALUES ('User', 'user@gmail.com', 'user_password', CURRENT_DATE),
+       ('Admin', 'admin@gmail.com', 'admin_password', CURRENT_DATE),
+       ('Guest', 'guest@gmail.com', 'guest_password', '2023-12-31 12:59:00');
 
 INSERT INTO user_role (role, user_id)
 VALUES ('USER', 100000),
@@ -45,8 +45,7 @@ INSERT INTO vote (user_id, restaurant_id, date)
 VALUES (100000, 100003, CURRENT_DATE),
        (100000, 100003, '2023-12-31'),
        (100001, 100004, CURRENT_DATE),
-       (100002, 100005, CURRENT_DATE),
-       (100001, 100006, '2023-12-31');
+       (100002, 100005, '2023-12-31');
 
 
 

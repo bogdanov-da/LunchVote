@@ -1,9 +1,6 @@
 package org.bda.voteapp.to;
 
-import org.bda.voteapp.model.Dish;
-import org.bda.voteapp.model.Menu;
-import org.bda.voteapp.model.Restaurant;
-import org.bda.voteapp.model.Vote;
+import org.bda.voteapp.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,11 +24,11 @@ public class Mapper {
     }
 
     public VoteTo toTo(Vote vote) {
-        return new VoteTo(vote.getRestaurant().getId(), vote.getDate());
+        return new VoteTo(vote.getId(), vote.getRestaurant().getId(), vote.getUser().getId(), vote.getDate());
     }
 
-    public Vote toModel(VoteTo voteTo) {
-        return new Vote();
+    public Vote toModel(int voteId, User user, Restaurant restaurant) {
+        return new Vote(voteId, user, restaurant);
     }
 
     public List<Dish> toDishes(List<DishTo> dishToList) {
