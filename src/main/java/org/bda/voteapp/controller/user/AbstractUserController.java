@@ -1,17 +1,15 @@
 package org.bda.voteapp.controller.user;
 
+import org.bda.voteapp.controller.BaseController;
 import org.bda.voteapp.model.User;
 import org.bda.voteapp.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-public class AbstractUserController {
+public class AbstractUserController extends BaseController {
     final UserRepository repository;
-    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public AbstractUserController(UserRepository repository) {

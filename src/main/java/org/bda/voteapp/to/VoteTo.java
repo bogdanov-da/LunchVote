@@ -18,10 +18,6 @@ public class VoteTo {
     public VoteTo() {
     }
 
-    public VoteTo(int id) {
-        this.id = id;
-    }
-
     public VoteTo(Integer id, Integer restaurantId, Integer userId, LocalDate date) {
         this.id = id;
         this.restaurantId = restaurantId;

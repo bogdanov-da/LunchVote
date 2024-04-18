@@ -3,15 +3,12 @@ package org.bda.voteapp.controller;
 import org.bda.voteapp.model.Menu;
 import org.bda.voteapp.model.Restaurant;
 import org.bda.voteapp.to.DishTo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.bda.voteapp.repository.MenuRepository;
 import org.bda.voteapp.repository.RestaurantRepository;
-import org.bda.voteapp.to.Mapper;
 import org.bda.voteapp.to.MenuTo;
 
 import java.time.LocalDate;
@@ -19,17 +16,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-public class MenuController {
+public class MenuController extends BaseController {
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
-    private final Mapper mapper;
-    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public MenuController(MenuRepository menuRepository, RestaurantRepository restaurantRepository, Mapper mapper) {
+    public MenuController(MenuRepository menuRepository, RestaurantRepository restaurantRepository) {
         this.menuRepository = menuRepository;
         this.restaurantRepository = restaurantRepository;
-        this.mapper = mapper;
     }
 
     @PostMapping("/{restaurantId}/menus")
@@ -53,7 +47,7 @@ public class MenuController {
         return mapper.toTo(created);
     }
 
-    @GetMapping("{restaurantId}/menus")
+    @GetMapping("/{restaurantId}/menus")
     public List<MenuTo> getAll(@PathVariable int restaurantId) {
         List<Menu> menus = menuRepository.getAllByRestaurantId(restaurantId);
         log.info("Get all menus for restaurant {}", restaurantId);

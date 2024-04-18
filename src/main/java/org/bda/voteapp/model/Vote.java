@@ -1,7 +1,5 @@
 package org.bda.voteapp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
@@ -29,10 +27,6 @@ public class Vote extends AbstractBaseEntity {
     private LocalDate date;
 
     public Vote() {
-    }
-
-    public Vote(Integer id) {
-        super(id);
     }
 
     public Vote(User user, Restaurant restaurant) {

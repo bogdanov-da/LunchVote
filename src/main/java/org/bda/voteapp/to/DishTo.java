@@ -18,6 +18,13 @@ public class DishTo {
         this.menuId = null;
     }
 
+    public DishTo(Integer id, String name, Double price, int menuId) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.menuId = menuId;
+    }
+
     public String getName() {
         return name;
     }

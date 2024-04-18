@@ -58,6 +58,8 @@ public class MenuControllerTest extends AbstractControllerTest {
         restaurant.setId(restaurant4.getId());
         dish1.setId(created.getDishes().getFirst().getId());
         dish2.setId(created.getDishes().getLast().getId());
+        dish1.setMenuId(menu1.getId());
+        dish2.setMenuId(menu1.getId());
         menu1.setRestaurant(restaurant);
         menu1.setDishes(mapper.toDishes(List.of(dish1, dish2)));
         MENU_MATCHER.assertMatch(mapper.toModel(created), menu1);
