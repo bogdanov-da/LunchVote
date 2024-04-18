@@ -31,6 +31,10 @@ public class Vote extends AbstractBaseEntity {
     public Vote() {
     }
 
+    public Vote(Integer id) {
+        super(id);
+    }
+
     public Vote(User user, Restaurant restaurant) {
         this(null, user, restaurant);
     }

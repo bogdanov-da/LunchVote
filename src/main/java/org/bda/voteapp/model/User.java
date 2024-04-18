@@ -1,13 +1,12 @@
 package org.bda.voteapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
@@ -25,6 +24,7 @@ public class User extends AbstractNameEntity {
     @Column(name = "password", nullable = false)
     @NotBlank
     @Size(min = 5, max = 128)
+    @JsonIgnore
     private String password;
 
     @Column(name = "registered", nullable = false, columnDefinition = "timestamp default now()", updatable = false)
@@ -38,18 +38,32 @@ public class User extends AbstractNameEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     @BatchSize(size = 200)
    // @JoinColumn
-    //@OnDelete(action = OnDeleteAction.CASCADE)
+   // @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
 
     public User() {
     }
 
-    public User(User user) {
-        this(user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.getRegistered(), user.getRoles());
+    public User(Integer id, String name, String email, String password, LocalDateTime registered, Role... roles) {
+        super(id, name);
+        this.email = email;
+        this.password = password;
+        this.registered =registered;
+        setRoles(List.of(roles));
     }
 
-    public User(Integer id, String name, String email, String password, Role role, Role... roles) {
-        this(id, name, email, password, LocalDateTime.now(), EnumSet.of(role, roles));
+    public User(String name, String email, String password, Role... roles) {
+        super(null, name);
+        this.email = email;
+        this.password = password;
+        setRoles(List.of(roles));
+    }
+
+    public User(String name, String email, String password, Collection<Role> roles) {
+        super(null, name);
+        this.email = email;
+        this.password = password;
+        setRoles(roles);
     }
 
     public User(Integer id, String name, String email, String password, LocalDateTime registered, Collection<Role> roles) {
@@ -90,5 +104,16 @@ public class User extends AbstractNameEntity {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", registered=" + registered +
+                ", roles=" + roles +
+                ", id=" + id +
+                '}';
     }
 }

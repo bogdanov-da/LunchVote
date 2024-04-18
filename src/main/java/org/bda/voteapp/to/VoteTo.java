@@ -4,9 +4,10 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class VoteTo {
-    private int id;
+    private Integer id;
     private Integer restaurantId;
     private Integer userId;
 
@@ -17,7 +18,11 @@ public class VoteTo {
     public VoteTo() {
     }
 
-    public VoteTo(int id, Integer restaurantId, Integer userId, LocalDate date) {
+    public VoteTo(int id) {
+        this.id = id;
+    }
+
+    public VoteTo(Integer id, Integer restaurantId, Integer userId, LocalDate date) {
         this.id = id;
         this.restaurantId = restaurantId;
         this.userId = userId;
@@ -54,6 +59,19 @@ public class VoteTo {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VoteTo voteTo = (VoteTo) o;
+        return id == voteTo.id && Objects.equals(restaurantId, voteTo.restaurantId) && Objects.equals(userId, voteTo.userId) && Objects.equals(date, voteTo.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, restaurantId, userId, date);
     }
 
     @Override

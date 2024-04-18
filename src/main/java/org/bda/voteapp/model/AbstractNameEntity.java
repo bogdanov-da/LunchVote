@@ -27,4 +27,12 @@ public abstract class AbstractNameEntity extends AbstractBaseEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractNameEntity{" +
+                "name='" + name + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

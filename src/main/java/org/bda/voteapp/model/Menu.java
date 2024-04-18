@@ -8,7 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "menu", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date"}, name = "menu_unique_restaurant_date_idx")})
@@ -21,7 +21,7 @@ public class Menu extends AbstractBaseEntity {
 
     @Valid
     @JsonManagedReference
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Dish> dishes;
 
     @NotNull
@@ -31,21 +31,16 @@ public class Menu extends AbstractBaseEntity {
     public Menu() {
     }
 
-    public Menu(Integer id) {
-        super(id);
-        this.dishes = null;
-    }
-
     public Menu(Integer id, List<Dish> dishes, Restaurant restaurant) {
         super(id);
-        this.dishes = dishes;
         this.restaurant = restaurant;
+        setDishes(dishes);
     }
 
     public Menu(Integer id, List<Dish> dishes) {
         super(id);
-        this.dishes = dishes;
         this.restaurant = null;
+        setDishes(dishes);
     }
 
     public Restaurant getRestaurant() {
@@ -62,10 +57,20 @@ public class Menu extends AbstractBaseEntity {
 
     public void setDishes(List<Dish> dishes) {
         dishes.forEach(dish -> dish.setMenu(this));
-        this.dishes = dishes;
+        this.dishes = dishes.isEmpty() ? List.of() : new ArrayList<>(dishes);
     }
 
     public LocalDate getDate() {
         return date;
+    }
+
+    @Override
+    public String toString() {
+        return "Menu{" +
+                "restaurant=" + restaurant +
+                ", dishes=" + dishes +
+                ", date=" + date +
+                ", id=" + id +
+                '}';
     }
 }

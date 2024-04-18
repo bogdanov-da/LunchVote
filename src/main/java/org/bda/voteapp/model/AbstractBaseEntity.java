@@ -1,5 +1,6 @@
 package org.bda.voteapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @MappedSuperclass
@@ -18,6 +19,8 @@ public class AbstractBaseEntity {
         this.id = id;
     }
 
+
+    @JsonIgnore
     public boolean isNew() {
         return this.id == null;
     }

@@ -5,20 +5,25 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.bda.voteapp.model.Dish;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MenuTo {
-    private int id;
+    private Integer id;
     @NotEmpty
     @Valid
     private List<Dish> dishes;
 
     @NotNull
-    private int restaurantId;
+    private Integer restaurantId;
 
-    public MenuTo(int id, List<Dish> dishes, int restaurantId) {
+    public MenuTo() {
+    }
+
+    public MenuTo(Integer id, List<Dish> dishes, Integer restaurantId) {
         this.id = id;
-        this.dishes = dishes;
+        this.dishes = dishes == null ? new ArrayList<>() : dishes;
         this.restaurantId = restaurantId;
     }
 
@@ -27,7 +32,7 @@ public class MenuTo {
     }
 
     public void setDishes(List<Dish> dishes) {
-        this.dishes = dishes;
+        this.dishes = dishes == null ? new ArrayList<>() : dishes;
     }
 
     public Integer getRestaurantId() {
@@ -44,5 +49,18 @@ public class MenuTo {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MenuTo menuTo = (MenuTo) o;
+        return Objects.equals(id, menuTo.id) && Objects.equals(dishes, menuTo.dishes) && Objects.equals(restaurantId, menuTo.restaurantId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, dishes, restaurantId);
     }
 }
