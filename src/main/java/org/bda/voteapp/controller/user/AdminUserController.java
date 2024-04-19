@@ -25,7 +25,6 @@ public class AdminUserController extends AbstractUserController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
     public User create(@RequestBody UserTo userTo) {
         log.info("Create user with body {}", userTo);
         User created = repository.save(toModel(userTo));

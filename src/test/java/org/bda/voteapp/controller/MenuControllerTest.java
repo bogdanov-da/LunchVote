@@ -7,6 +7,7 @@ import org.bda.voteapp.util.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -27,6 +28,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     private Mapper mapper;
 
     @Test
+    @WithUserDetails(value = ADMIN_ROLE)
     void create() throws Exception {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + "/" + restaurant4.getId() + "/menus")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -44,6 +46,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = ADMIN_ROLE)
     void addDishes() throws Exception {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL +
                         "/" + restaurant4.getId() + "/menus/" + menu1.getId())
@@ -67,6 +70,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails
     void getAll() throws Exception {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(restaurant4.getId());
@@ -80,6 +84,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails
     void get() throws Exception {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(restaurant4.getId());
@@ -92,6 +97,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails
     void getToday() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + restaurant1.getId() + "/menus/today"))
                 .andDo(print())
@@ -101,6 +107,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = ADMIN_ROLE)
     void delete() throws Exception {
         int id = restaurant1.getId();
         perform(MockMvcRequestBuilders.delete(REST_URL + "/" + id + "/menus"))

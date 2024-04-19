@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,6 +30,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = ADMIN_ROLE)
     void getByUserId() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/by-user?id=" + user.getId()))
                 .andDo(print())
@@ -38,6 +40,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails
     void get() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + vote1.getId()))
                 .andDo(print())
@@ -47,6 +50,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails
     void create() throws Exception {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + "?userId=" + user.getId() +
                 "&restaurantId=" + restaurant2.getId()))
@@ -63,6 +67,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = ADMIN_ROLE)
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + "/" + vote1.getId()))
                 .andDo(print())
@@ -74,7 +79,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @Rollback
+    @WithUserDetails
     void updateBefore11() throws Exception {
         int userId = user.getId();
         int restaurantId = restaurant2.getId();
@@ -99,6 +104,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails
     void updateAfter11() throws Exception {
         int userId = user.getId();
         int restaurantId = restaurant2.getId();

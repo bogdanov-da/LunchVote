@@ -1,5 +1,6 @@
 package org.bda.voteapp;
 
+import org.bda.voteapp.config.AppSecurityConfigurer;
 import org.bda.voteapp.model.Dish;
 import org.bda.voteapp.model.Menu;
 import org.bda.voteapp.model.Restaurant;
@@ -17,6 +18,7 @@ import java.util.List;
 import static org.bda.voteapp.model.Role.*;
 
 public class TestData {
+    public static final String ADMIN_ROLE = "admin";
     public static final MatcherFactory.Matcher<User> USER_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "password");
     public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class);
     public static final MatcherFactory.Matcher<MenuTo> MENU_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(MenuTo.class);
@@ -24,10 +26,10 @@ public class TestData {
     public static final MatcherFactory.Matcher<Menu> MENU_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Menu.class, "restaurant.name");
     public static final MatcherFactory.Matcher<DishTo> DISH_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(DishTo.class);
 
-    public static final User admin = new User(100001, "Admin", "admin@gmail.com", "admin_password",
-            LocalDateTime.of(2020, 1, 1, 0, 0, 0), List.of(ADMIN, USER));
-    public static final User user = new User(100000, "User", "user@gmail.com", "user_password",
-            LocalDateTime.of(2022, 1, 1, 0, 0, 0), Collections.singleton(USER));
+    public static final User admin = AppSecurityConfigurer.admin;/*new User(100001, "Admin", "admin@gmail.com", "admin_password",
+            LocalDateTime.of(2020, 1, 1, 0, 0, 0), List.of(ADMIN, USER));*/
+    public static final User user = AppSecurityConfigurer.user;/*new User(100000, "User", "user@gmail.com", "user_password",
+            LocalDateTime.of(2022, 1, 1, 0, 0, 0), Collections.singleton(USER));*/
     public static final User guest = new User(100002, "Guest", "guest@gmail.com", "guest_password",
             LocalDateTime.of(2023, 12, 31, 12, 59, 0));
     public static final User newUser = new User("New one", "new@gmail.com", "new_password", USER);

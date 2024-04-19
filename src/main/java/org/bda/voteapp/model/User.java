@@ -16,14 +16,14 @@ import java.util.*;
 @Table(name = "users")
 public class User extends AbstractNameEntity {
     @Column(name = "email", nullable = false, unique = true)
-    @Email
+    @Email(message = "Email is not valid", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     @NotBlank
-    @Size(max = 128)
+    @Size(message = "Max length is 128 symbols", max = 128)
     private String email;
 
     @Column(name = "password", nullable = false)
     @NotBlank
-    @Size(min = 5, max = 128)
+    @Size(message = "Password should has min 5 and max 10 symbols", min = 5, max = 10)
     @JsonIgnore
     private String password;
 
