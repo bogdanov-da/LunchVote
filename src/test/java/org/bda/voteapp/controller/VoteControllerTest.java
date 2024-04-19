@@ -33,7 +33,7 @@ public class VoteControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/by-user?id=" + user.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(VOTE_TO_MATCHER.contentJson(vote1, vote2));
     }
 
@@ -42,7 +42,7 @@ public class VoteControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + vote1.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(VOTE_TO_MATCHER.contentJson(vote1));
     }
 
@@ -52,7 +52,7 @@ public class VoteControllerTest extends AbstractControllerTest {
                 "&restaurantId=" + restaurant2.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         VoteTo created = VOTE_TO_MATCHER.readFromJson(action);
         int newId = created.getId();
@@ -81,7 +81,7 @@ public class VoteControllerTest extends AbstractControllerTest {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + "?userId=" + userId + "&restaurantId=" + restaurantId))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         VoteTo created = VOTE_TO_MATCHER.readFromJson(action);
         restaurantId = restaurant3.getId();
@@ -105,7 +105,7 @@ public class VoteControllerTest extends AbstractControllerTest {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + "?userId=" + userId + "&restaurantId=" + restaurantId))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         VoteTo created = VOTE_TO_MATCHER.readFromJson(action);
 

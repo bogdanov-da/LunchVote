@@ -27,7 +27,7 @@ public class AdminUserControllerTest extends AbstractControllerTest {
                         .content(JsonUtil.writeValue(newUser)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         User created = USER_MATCHER.readFromJson(action);
         int newId = created.getId();
@@ -41,7 +41,7 @@ public class AdminUserControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + admin.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(admin));
     }
 
@@ -50,7 +50,7 @@ public class AdminUserControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/by-email?email=" + user.getEmail()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(user));
     }
 
@@ -59,7 +59,7 @@ public class AdminUserControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(user, admin, guest));
     }
 

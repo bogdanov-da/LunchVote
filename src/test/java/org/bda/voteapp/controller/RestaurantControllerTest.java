@@ -23,7 +23,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_MATCHER.contentJson(restaurant1, restaurant2, restaurant3, restaurant4));
     }
 
@@ -32,7 +32,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + restaurant3.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_MATCHER.contentJson(restaurant3));
     }
 
@@ -41,7 +41,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/of-day"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_MATCHER.contentJson(restaurant2));
     }
 
@@ -52,7 +52,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(newRestaurant)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         Restaurant created = RESTAURANT_MATCHER.readFromJson(action);
         int newId = created.getId();

@@ -23,8 +23,6 @@ public class AbstractControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    public static final String APPLICATION_JSON = "application/json;charset=UTF-8";
-
     protected ResultActions perform(MockHttpServletRequestBuilder builder) throws Exception {
         return mockMvc.perform(builder);
     }

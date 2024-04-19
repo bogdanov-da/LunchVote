@@ -1,6 +1,7 @@
 package org.bda.voteapp.controller;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.bda.voteapp.TestData.*;
@@ -16,7 +17,7 @@ public class ProfileUserControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + user.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(user));
     }
 
@@ -25,7 +26,7 @@ public class ProfileUserControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/by-email?email=" + user.getEmail()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(user));
     }
 }

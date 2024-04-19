@@ -32,7 +32,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         MenuTo created = MENU_TO_MATCHER.readFromJson(action);
 
@@ -51,7 +51,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(List.of(dish1, dish2))))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         MenuTo created = MENU_TO_MATCHER.readFromJson(action);
         Restaurant restaurant = new Restaurant();
@@ -75,7 +75,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + restaurant4.getId() + "/menus"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_TO_MATCHER.contentJson(mapper.toTo(menu1), mapper.toTo(menu2)));
     }
 
@@ -87,7 +87,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/menus/" + menu2.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_TO_MATCHER.contentJson(mapper.toTo(menu2)));
     }
 
@@ -96,7 +96,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + restaurant1.getId() + "/menus/today"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_TO_MATCHER.contentJson(menuTo));
     }
 
