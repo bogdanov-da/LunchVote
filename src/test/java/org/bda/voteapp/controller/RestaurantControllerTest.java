@@ -20,7 +20,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     private RestaurantController restaurantController;
 
     @Test
-    @WithUserDetails
+    @WithUserDetails(value = USER_DETAILS)
     void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
@@ -30,7 +30,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails
+    @WithUserDetails(value = USER_DETAILS)
     void get() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + restaurant3.getId()))
                 .andDo(print())
@@ -40,7 +40,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails
+    @WithUserDetails(value = USER_DETAILS)
     void getRestaurantOfDay() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/of-day"))
                 .andDo(print())
@@ -50,7 +50,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_ROLE)
+    @WithUserDetails(value = ADMIN_DETAILS)
     void create() throws Exception {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -67,7 +67,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_ROLE)
+    @WithUserDetails(value = ADMIN_DETAILS)
     void update() throws Exception {
         int id = restaurant2.getId();
         perform(MockMvcRequestBuilders.put(REST_URL + "/" + id + "?name=" + newRestaurant.getName())
@@ -79,7 +79,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_ROLE)
+    @WithUserDetails(value = ADMIN_DETAILS)
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + "/" + restaurant1.getId()))
                 .andExpect(status().isNoContent());
@@ -87,10 +87,20 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails
+    @WithUserDetails(value = USER_DETAILS)
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/10"))
                 .andDo(print())
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithUserDetails(value = USER_DETAILS)
+    void createForbidden() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newRestaurant)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 }

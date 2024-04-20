@@ -3,7 +3,7 @@ package org.bda.voteapp.to;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class NamedTo extends BaseTo{
+public class NamedTo extends BaseTo {
     @NotBlank
     @Size(min = 2, max = 128)
     protected String name;

@@ -12,13 +12,12 @@ import org.bda.voteapp.to.VoteTo;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.bda.voteapp.model.Role.*;
 
 public class TestData {
-    public static final String ADMIN_ROLE = "admin";
+
     public static final MatcherFactory.Matcher<User> USER_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "password");
     public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class);
     public static final MatcherFactory.Matcher<MenuTo> MENU_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(MenuTo.class);
@@ -26,10 +25,10 @@ public class TestData {
     public static final MatcherFactory.Matcher<Menu> MENU_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Menu.class, "restaurant.name");
     public static final MatcherFactory.Matcher<DishTo> DISH_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(DishTo.class);
 
-    public static final User admin = AppSecurityConfigurer.admin;/*new User(100001, "Admin", "admin@gmail.com", "admin_password",
-            LocalDateTime.of(2020, 1, 1, 0, 0, 0), List.of(ADMIN, USER));*/
-    public static final User user = AppSecurityConfigurer.user;/*new User(100000, "User", "user@gmail.com", "user_password",
-            LocalDateTime.of(2022, 1, 1, 0, 0, 0), Collections.singleton(USER));*/
+    public static final User admin = AppSecurityConfigurer.admin;
+    public static final User user = AppSecurityConfigurer.user;
+    public static final String ADMIN_DETAILS = "admin@gmail.com";
+    public static final String USER_DETAILS = "user@gmail.com";
     public static final User guest = new User(100002, "Guest", "guest@gmail.com", "guest_password",
             LocalDateTime.of(2023, 12, 31, 12, 59, 0));
     public static final User newUser = new User("New one", "new@gmail.com", "new_password", USER);
@@ -55,6 +54,4 @@ public class TestData {
     public static final VoteTo vote1 = new VoteTo(100022, 100003, 100000, LocalDate.of(2023, 12, 30));
     public static final VoteTo vote2 = new VoteTo(100023, 100003, 100000, LocalDate.of(2023, 12, 31));
     public static VoteTo newVote = new VoteTo(null, 100004, 100000, LocalDate.now());
-
-
 }

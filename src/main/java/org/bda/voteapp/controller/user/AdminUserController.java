@@ -32,9 +32,9 @@ public class AdminUserController extends AbstractUserController {
     }
 
     @GetMapping
-    public List<User> getAll(@RequestParam @Nullable LocalDate dateFrom, @RequestParam @Nullable LocalDate dateTo) {
+    public List<User> getAll(@RequestParam @Nullable LocalDate registeredFrom, @RequestParam @Nullable LocalDate registeredTo) {
         log.info("Get all users");
-        return repository.getAllByRegisteredBetween(atStartOfDayOrMin(dateFrom), atStartOfNextDayOrMax(dateTo));
+        return repository.getAllByRegisteredBetween(atStartOfDayOrMin(registeredFrom), atStartOfNextDayOrMax(registeredTo));
     }
 
     @DeleteMapping("/{id}")

@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WithUserDetails(value = ADMIN_ROLE)
+@WithUserDetails(value = ADMIN_DETAILS)
 public class AdminUserControllerTest extends AbstractControllerTest {
     @Autowired
     private AdminUserController adminUserController;
@@ -86,7 +86,7 @@ public class AdminUserControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails
+    @WithUserDetails(value = USER_DETAILS)
     void getAllForbidden() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())

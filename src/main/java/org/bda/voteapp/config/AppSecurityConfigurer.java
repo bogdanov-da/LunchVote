@@ -21,6 +21,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,19 +47,16 @@ public class AppSecurityConfigurer {
     @Bean
     public UserDetailsService userDetailsService(BCryptPasswordEncoder bCryptPasswordEncoder) {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("user")
-                .password(bCryptPasswordEncoder.encode("user"))
-                .roles("USER")
+        manager.createUser(User.withUsername(user.getEmail())
+                .password(bCryptPasswordEncoder.encode(user.getPassword()))
+                .roles(USER.name())
                 .build());
-        manager.createUser(User.withUsername("admin")
-                .password(bCryptPasswordEncoder.encode("admin"))
-                .roles("USER", "ADMIN")
+        manager.createUser(User.withUsername(admin.getEmail())
+                .password(bCryptPasswordEncoder.encode(admin.getPassword()))
+                .roles(ADMIN.name(), USER.name())
                 .build());
         return manager;
     }
-
-
-
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -66,16 +64,17 @@ public class AppSecurityConfigurer {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                                .requestMatchers(HttpMethod.GET, AdminUserController.REST_URL).hasAnyRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.GET, RestaurantController.REST_URL, ProfileUserController.REST_URL).hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.GET, AdminUserController.REST_URL,
+                                        VoteController.REST_URL + "/by-user").hasAnyRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.GET, RestaurantController.REST_URL,
+                                        ProfileUserController.REST_URL).hasAnyRole(Role.ADMIN.name(), Role.USER.name())
                                 .requestMatchers(HttpMethod.POST, VoteController.REST_URL).hasAnyRole(USER.name())
                                 .requestMatchers(HttpMethod.PUT, VoteController.REST_URL).hasAnyRole(USER.name())
                                 .requestMatchers(HttpMethod.GET, VoteController.REST_URL + "/").hasAnyRole(USER.name())
-                                .requestMatchers(HttpMethod.GET, VoteController.REST_URL + "/by-user").hasAnyRole(ADMIN.name())
-                                .requestMatchers(HttpMethod.POST, RestaurantController.REST_URL).hasAnyRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.POST, AdminUserController.REST_URL).hasAnyRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.POST, RestaurantController.REST_URL, RestaurantController.REST_URL + "/*/menus",
+                                        AdminUserController.REST_URL).hasAnyRole(Role.ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, RestaurantController.REST_URL).hasAnyRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.DELETE, RestaurantController.REST_URL, VoteController.REST_URL)
+                                .requestMatchers(HttpMethod.DELETE, RestaurantController.REST_URL, VoteController.REST_URL + "/**")
                                 .hasAnyRole(Role.ADMIN.name())
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/swagger-resources/**").permitAll()
@@ -87,5 +86,4 @@ public class AppSecurityConfigurer {
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
-
 }

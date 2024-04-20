@@ -28,7 +28,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     private Mapper mapper;
 
     @Test
-    @WithUserDetails(value = ADMIN_ROLE)
+    @WithUserDetails(value = ADMIN_DETAILS)
     void create() throws Exception {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + "/" + restaurant4.getId() + "/menus")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -46,7 +46,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_ROLE)
+    @WithUserDetails(value = ADMIN_DETAILS)
     void addDishes() throws Exception {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL +
                         "/" + restaurant4.getId() + "/menus/" + menu1.getId())
@@ -70,7 +70,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails
+    @WithUserDetails(value = USER_DETAILS)
     void getAll() throws Exception {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(restaurant4.getId());
@@ -84,7 +84,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails
+    @WithUserDetails(value = USER_DETAILS)
     void get() throws Exception {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(restaurant4.getId());
@@ -97,7 +97,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails
+    @WithUserDetails(value = USER_DETAILS)
     void getToday() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/" + restaurant1.getId() + "/menus/today"))
                 .andDo(print())
@@ -107,7 +107,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_ROLE)
+    @WithUserDetails(value = ADMIN_DETAILS)
     void delete() throws Exception {
         int id = restaurant1.getId();
         perform(MockMvcRequestBuilders.delete(REST_URL + "/" + id + "/menus"))
@@ -115,5 +115,14 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         MENU_TO_MATCHER.assertMatch(menuController.getAll(id), List.of());
+    }
+
+    @Test
+    @WithUserDetails(value = USER_DETAILS)
+    void createForbidden() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL + "/" + restaurant4.getId() + "/menus")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 }

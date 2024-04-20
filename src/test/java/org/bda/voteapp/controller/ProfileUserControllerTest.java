@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WithUserDetails
+@WithUserDetails(value = USER_DETAILS)
 public class ProfileUserControllerTest extends AbstractControllerTest {
     @Test
     void get() throws Exception {

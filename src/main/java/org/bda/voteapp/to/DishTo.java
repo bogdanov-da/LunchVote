@@ -2,25 +2,22 @@ package org.bda.voteapp.to;
 
 import java.util.Objects;
 
-public class DishTo {
-    private Integer id;
-    private String name;
+public class DishTo extends NamedTo {
     private Double price;
     private Integer menuId;
 
     public DishTo() {
+        super(null, null);
     }
 
     public DishTo(Integer id, String name, Double price) {
-        this.id = id;
-        this.name = name;
+        super(id, name);
         this.price = price;
         this.menuId = null;
     }
 
     public DishTo(Integer id, String name, Double price, int menuId) {
-        this.id = id;
-        this.name = name;
+        super(id, name);
         this.price = price;
         this.menuId = menuId;
     }
