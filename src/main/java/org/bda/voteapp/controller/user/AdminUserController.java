@@ -3,6 +3,9 @@ package org.bda.voteapp.controller.user;
 import org.bda.voteapp.model.User;
 import org.bda.voteapp.repository.UserRepository;
 import org.bda.voteapp.to.UserTo;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
@@ -16,6 +19,7 @@ import static org.bda.voteapp.util.DateTimeUtil.atStartOfDayOrMin;
 import static org.bda.voteapp.util.DateTimeUtil.atStartOfNextDayOrMax;
 
 @RestController
+@CacheConfig(cacheNames = "users")
 @RequestMapping(value = AdminUserController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminUserController extends AbstractUserController {
     public static final String REST_URL = "/api/v1/admin/users";
@@ -25,6 +29,7 @@ public class AdminUserController extends AbstractUserController {
     }
 
     @PostMapping
+    @CacheEvict(allEntries = true)
     public User create(@RequestBody UserTo userTo) {
         log.info("Create user with body {}", userTo);
         User created = repository.save(toModel(userTo));
@@ -32,6 +37,7 @@ public class AdminUserController extends AbstractUserController {
     }
 
     @GetMapping
+    @Cacheable
     public List<User> getAll(@RequestParam @Nullable LocalDate registeredFrom, @RequestParam @Nullable LocalDate registeredTo) {
         log.info("Get all users");
         return repository.getAllByRegisteredBetween(atStartOfDayOrMin(registeredFrom), atStartOfNextDayOrMax(registeredTo));

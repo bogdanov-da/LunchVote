@@ -3,6 +3,8 @@ package org.bda.voteapp.controller;
 import org.bda.voteapp.model.Vote;
 import org.bda.voteapp.util.IllegalRequestDataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,7 @@ public class VoteController extends BaseController {
     }
 
     @GetMapping("/{id}")
+    @Cacheable("votes")
     public VoteTo get(@PathVariable int id) {
         Vote vote = voteRepository.findById(id).orElseThrow();
         log.info("Get vote by id = {}", id);
@@ -49,6 +52,7 @@ public class VoteController extends BaseController {
     }
 
     @PostMapping
+    @CacheEvict(value = "votes", allEntries = true)
     public VoteTo create(@RequestParam int userId, @RequestParam int restaurantId) {
         Vote vote = new Vote(userRepository.findById(userId).orElseThrow(),
                 restaurantRepository.findById(restaurantId).orElseThrow());
@@ -58,6 +62,7 @@ public class VoteController extends BaseController {
     }
 
     @PutMapping
+    @CacheEvict(value = "votes", allEntries = true)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestParam int userId, @RequestParam int restaurantId, @RequestParam LocalTime localTime) {
         Vote vote = voteRepository.getByDateAndUserId(LocalDate.now(), userId).orElseThrow();

@@ -24,6 +24,10 @@ spring:
         jdbc:
           batch_size: 20
     show-sql: true
+  cache:
+    cache-names: users, restaurants, menus, votes
+    caffeine:
+      spec: expireAfterExcess=60s
   sql:
     init:
       mode: always
@@ -32,3 +36,9 @@ spring:
       data-locations: classpath:db/populateDB.sql
 server:
   port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+

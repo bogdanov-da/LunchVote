@@ -4,6 +4,9 @@ import org.bda.voteapp.model.Menu;
 import org.bda.voteapp.model.Restaurant;
 import org.bda.voteapp.to.DishTo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@CacheConfig(cacheNames = "menus")
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class MenuController extends BaseController {
     private final MenuRepository menuRepository;
@@ -27,6 +31,7 @@ public class MenuController extends BaseController {
     }
 
     @PostMapping("/{restaurantId}/menus")
+    @CacheEvict(allEntries = true)
     public MenuTo create(@PathVariable int restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
         Menu menu = new Menu();
@@ -37,6 +42,7 @@ public class MenuController extends BaseController {
     }
 
     @PostMapping("/{restaurantId}/menus/{menuId}")
+    @CacheEvict(allEntries = true)
     public MenuTo addDishes(@RequestBody List<DishTo> dishesTo, @PathVariable int restaurantId, @PathVariable int menuId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
         Menu menu = menuRepository.findById(menuId).orElseThrow();
@@ -48,6 +54,7 @@ public class MenuController extends BaseController {
     }
 
     @GetMapping("/{restaurantId}/menus")
+    @Cacheable
     public List<MenuTo> getAll(@PathVariable int restaurantId) {
         List<Menu> menus = menuRepository.getAllByRestaurantId(restaurantId);
         log.info("Get all menus for restaurant {}", restaurantId);
@@ -55,6 +62,7 @@ public class MenuController extends BaseController {
     }
 
     @GetMapping("/menus/{id}")
+    @Cacheable
     public MenuTo get(@PathVariable int id) {
         Menu menu = menuRepository.findById(id).orElseThrow();
         log.info("Get menu by id = {}", id);

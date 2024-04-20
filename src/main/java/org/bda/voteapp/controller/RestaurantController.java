@@ -2,9 +2,10 @@ package org.bda.voteapp.controller;
 
 import org.bda.voteapp.model.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.bda.voteapp.repository.RestaurantRepository;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@CacheConfig(cacheNames="restaurants")
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class RestaurantController extends BaseController {
     public static final String REST_URL = "/api/v1/restaurants";
@@ -44,6 +46,7 @@ public class RestaurantController extends BaseController {
     }
 
     @PostMapping
+    @CacheEvict(allEntries = true)
     public Restaurant create(@RequestBody Restaurant restaurant) {
         Restaurant created = restaurantRepository.save(restaurant);
         log.info("Create new restaurant {}", restaurant);
@@ -52,6 +55,7 @@ public class RestaurantController extends BaseController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(allEntries = true)
     public void update(@RequestParam String name, @PathVariable int id) {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow();
         restaurant.setName(name);
