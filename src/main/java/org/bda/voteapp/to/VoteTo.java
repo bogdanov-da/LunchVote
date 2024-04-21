@@ -6,8 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class VoteTo {
-    private Integer id;
+public class VoteTo extends BaseTo {
     private Integer restaurantId;
     private Integer userId;
 
@@ -16,10 +15,11 @@ public class VoteTo {
     private LocalDate date;
 
     public VoteTo() {
+        super(null);
     }
 
     public VoteTo(Integer id, Integer restaurantId, Integer userId, LocalDate date) {
-        this.id = id;
+        super(id);
         this.restaurantId = restaurantId;
         this.userId = userId;
         this.date = date;
@@ -39,14 +39,6 @@ public class VoteTo {
 
     public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Integer getUserId() {

@@ -12,6 +12,9 @@ import org.bda.voteapp.repository.RestaurantRepository;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.bda.voteapp.util.ValidationUtil.assureIdConsistent;
+import static org.bda.voteapp.util.ValidationUtil.checkNew;
+
 @RestController
 @CacheConfig(cacheNames="restaurants")
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,6 +37,7 @@ public class RestaurantController extends BaseController {
     @GetMapping("/{id}")
     public Restaurant get(@PathVariable int id) {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow();
+        assureIdConsistent(restaurant, id);
         log.info("Get restaurant by id = {}", id);
         return restaurant;
     }
@@ -48,6 +52,7 @@ public class RestaurantController extends BaseController {
     @PostMapping
     @CacheEvict(allEntries = true)
     public Restaurant create(@RequestBody Restaurant restaurant) {
+        checkNew(restaurant);
         Restaurant created = restaurantRepository.save(restaurant);
         log.info("Create new restaurant {}", restaurant);
         return created;
@@ -58,6 +63,7 @@ public class RestaurantController extends BaseController {
     @CacheEvict(allEntries = true)
     public void update(@RequestParam String name, @PathVariable int id) {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow();
+        assureIdConsistent(restaurant, id);
         restaurant.setName(name);
         log.info("Restaurant {} was updated by name {}", id, name);
         restaurantRepository.save(restaurant);

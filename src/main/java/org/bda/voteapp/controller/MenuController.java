@@ -3,6 +3,7 @@ package org.bda.voteapp.controller;
 import org.bda.voteapp.model.Menu;
 import org.bda.voteapp.model.Restaurant;
 import org.bda.voteapp.to.DishTo;
+import org.bda.voteapp.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -16,6 +17,8 @@ import org.bda.voteapp.to.MenuTo;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static org.bda.voteapp.util.ValidationUtil.assureIdConsistent;
 
 @RestController
 @CacheConfig(cacheNames = "menus")
@@ -34,6 +37,7 @@ public class MenuController extends BaseController {
     @CacheEvict(allEntries = true)
     public MenuTo create(@PathVariable int restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+        assureIdConsistent(restaurant, restaurantId);
         Menu menu = new Menu();
         menu.setRestaurant(restaurant);
         Menu created = menuRepository.save(menu);
@@ -45,7 +49,10 @@ public class MenuController extends BaseController {
     @CacheEvict(allEntries = true)
     public MenuTo addDishes(@RequestBody List<DishTo> dishesTo, @PathVariable int restaurantId, @PathVariable int menuId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+        assureIdConsistent(restaurant, restaurantId);
         Menu menu = menuRepository.findById(menuId).orElseThrow();
+        assureIdConsistent(menu, menuId);
+        dishesTo.forEach(ValidationUtil::checkNew);
         menu.setRestaurant(restaurant);
         menu.setDishes(mapper.toDishes(dishesTo));
         Menu created = menuRepository.save(menu);
@@ -65,6 +72,7 @@ public class MenuController extends BaseController {
     @Cacheable
     public MenuTo get(@PathVariable int id) {
         Menu menu = menuRepository.findById(id).orElseThrow();
+        assureIdConsistent(menu, id);
         log.info("Get menu by id = {}", id);
         return mapper.toTo(menu);
     }

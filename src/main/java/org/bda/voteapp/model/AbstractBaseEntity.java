@@ -1,13 +1,16 @@
 package org.bda.voteapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
+import org.bda.voteapp.util.HasId;
 
 @MappedSuperclass
-public class AbstractBaseEntity {
+public class AbstractBaseEntity implements HasId {
     public static final int START_SEQ = 100000;
 
     @Id
+    @Hidden
     @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1, initialValue = START_SEQ)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
     protected Integer id;

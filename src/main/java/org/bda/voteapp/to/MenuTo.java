@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MenuTo {
-    private Integer id;
+public class MenuTo extends BaseTo {
     @NotEmpty
     @Valid
     private List<Dish> dishes;
@@ -19,10 +18,11 @@ public class MenuTo {
     private Integer restaurantId;
 
     public MenuTo() {
+        super(null);
     }
 
     public MenuTo(Integer id, List<Dish> dishes, Integer restaurantId) {
-        this.id = id;
+        super(id);
         this.dishes = dishes == null ? new ArrayList<>() : dishes;
         this.restaurantId = restaurantId;
     }
@@ -41,14 +41,6 @@ public class MenuTo {
 
     public void setRestaurantId(Integer restaurantId) {
         this.restaurantId = restaurantId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     @Override

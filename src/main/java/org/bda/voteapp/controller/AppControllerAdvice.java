@@ -3,7 +3,6 @@ package org.bda.voteapp.controller;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.bda.voteapp.util.IllegalRequestDataException;
-import org.bda.voteapp.util.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -17,21 +16,21 @@ import java.util.*;
 
 @ControllerAdvice
 public class AppControllerAdvice {
-    @ExceptionHandler({NoSuchElementException.class, NotFoundException.class})
+    @ExceptionHandler({NoSuchElementException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Object notFoundHandler(Exception e) {
+    public Object notFoundExceptionHandler() {
         return new HttpEntity<>("Resource not found");
     }
 
     @ExceptionHandler(IllegalRequestDataException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    public Object illegalRequestDataHandler(Exception e) {
+    public Object illegalRequestExceptionDataHandler(Exception e) {
         return new HttpEntity<>(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Object badRequestHandler(Exception e) {
+    public Object badRequestExceptionHandler(Exception e) {
         return new HttpEntity<>(e.getMessage());
     }
 
@@ -46,5 +45,4 @@ public class AppControllerAdvice {
     public Object dataIntegrityViolationExceptionHandler(SQLException e) {
         return new HttpEntity<>(e.getNextException().getMessage());
     }
-
 }

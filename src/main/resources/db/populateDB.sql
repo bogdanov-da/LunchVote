@@ -1,11 +1,3 @@
-DELETE FROM vote;
-DELETE FROM dish;
-DELETE FROM menu;
-DELETE FROM restaurant;
-DELETE FROM user_role;
-DELETE FROM users;
-ALTER SEQUENCE global_seq RESTART WITH 100000;
-
 INSERT INTO users (name, email, password, registered)
 VALUES ('User', 'user@gmail.com', 'user_password', '2022-01-01 00:00:00'),
        ('Admin', 'admin@gmail.com', 'admin_password', '2020-01-01 00:00:00'),

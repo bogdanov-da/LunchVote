@@ -8,8 +8,7 @@ logging:
         web: DEBUG
 spring:
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/lunch_vote
+    url: jdbc:hsqldb:mem:vote
     username: user
     password: password
   jpa:
@@ -31,7 +30,7 @@ spring:
   sql:
     init:
       mode: always
-      platform: postgres
+      platform: hsql
       schema-locations: classpath:db/schema.sql
       data-locations: classpath:db/populateDB.sql
 server:
@@ -41,4 +40,5 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-
+springdoc:
+  paths-to-exclude: "/api/v1/votes/test"

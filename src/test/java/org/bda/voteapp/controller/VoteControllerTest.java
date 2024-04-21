@@ -90,7 +90,7 @@ public class VoteControllerTest extends AbstractControllerTest {
         VoteTo created = VOTE_TO_MATCHER.readFromJson(action);
         restaurantId = restaurant3.getId();
 
-        perform(MockMvcRequestBuilders.put(REST_URL + "?userId=" + userId + "&restaurantId=" + restaurantId
+        perform(MockMvcRequestBuilders.put(REST_URL + "/test?userId=" + userId + "&restaurantId=" + restaurantId
                         + "&localTime=" + setLocalTime("10:59:59"))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -114,7 +114,7 @@ public class VoteControllerTest extends AbstractControllerTest {
 
         VoteTo created = VOTE_TO_MATCHER.readFromJson(action);
 
-        perform(MockMvcRequestBuilders.put(REST_URL + "?userId=" + userId + "&restaurantId=" + restaurantId
+        perform(MockMvcRequestBuilders.put(REST_URL + "/test?userId=" + userId + "&restaurantId=" + restaurantId
                         + "&localTime=" + setLocalTime("11:00:01"))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable());

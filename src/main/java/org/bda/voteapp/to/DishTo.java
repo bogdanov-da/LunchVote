@@ -46,14 +46,6 @@ public class DishTo extends NamedTo {
         this.menuId = menuId;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
