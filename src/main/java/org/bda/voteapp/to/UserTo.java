@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.bda.voteapp.model.Role;
 import org.hibernate.annotations.BatchSize;
+
 import java.util.Set;
 
 public class UserTo {

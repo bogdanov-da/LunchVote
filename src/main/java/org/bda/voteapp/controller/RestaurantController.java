@@ -16,7 +16,7 @@ import static org.bda.voteapp.util.ValidationUtil.assureIdConsistent;
 import static org.bda.voteapp.util.ValidationUtil.checkNew;
 
 @RestController
-@CacheConfig(cacheNames="restaurants")
+@CacheConfig(cacheNames = "restaurants")
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class RestaurantController extends BaseController {
     public static final String REST_URL = "/api/v1/restaurants";

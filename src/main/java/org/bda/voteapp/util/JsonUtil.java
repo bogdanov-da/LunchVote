@@ -9,7 +9,6 @@ import java.util.List;
 import static org.bda.voteapp.util.JacksonObjectMapper.getMapper;
 
 public class JsonUtil {
-
     public static <T> List<T> readValues(String json, Class<T> clazz) {
         ObjectReader reader = getMapper().readerFor(clazz);
         try {
