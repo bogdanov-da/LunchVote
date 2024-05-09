@@ -1,85 +1,56 @@
 package org.bda.voteapp.config;
 
-import org.bda.voteapp.controller.RestaurantController;
-import org.bda.voteapp.controller.VoteController;
-import org.bda.voteapp.controller.user.AdminUserController;
-import org.bda.voteapp.controller.user.ProfileUserController;
+import lombok.AllArgsConstructor;
+import org.bda.voteapp.model.AuthUser;
 import org.bda.voteapp.model.Role;
+import org.bda.voteapp.model.User;
+import org.bda.voteapp.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-
-import static org.bda.voteapp.model.Role.ADMIN;
-import static org.bda.voteapp.model.Role.USER;
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true)
+@AllArgsConstructor
 public class AppSecurityConfigurer {
-    public static final org.bda.voteapp.model.User admin = new org.bda.voteapp.model.User(100001, "Admin",
-            "admin@gmail.com", "admin_password",
-            LocalDateTime.of(2020, 1, 1, 0, 0, 0), List.of(ADMIN, USER));
-    public static final org.bda.voteapp.model.User user = new org.bda.voteapp.model.User(100000, "User",
-            "user@gmail.com", "user_password",
-            LocalDateTime.of(2022, 1, 1, 0, 0, 0), Collections.singleton(USER));
+    private final UserRepository userRepository;
+    public static final PasswordEncoder PASSWORD_ENCODER = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    PasswordEncoder passwordEncoder() {
+        return PASSWORD_ENCODER;
     }
 
     @Bean
-    public UserDetailsService userDetailsService(BCryptPasswordEncoder bCryptPasswordEncoder) {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername(user.getEmail())
-                .password(bCryptPasswordEncoder.encode(user.getPassword()))
-                .roles(USER.name())
-                .build());
-        manager.createUser(User.withUsername(admin.getEmail())
-                .password(bCryptPasswordEncoder.encode(admin.getPassword()))
-                .roles(ADMIN.name(), USER.name())
-                .build());
-        return manager;
+    public UserDetailsService userDetailsService() {
+        return email -> {
+            Optional<User> optionalUser = userRepository.getByEmail(email);
+            return new AuthUser(optionalUser.orElseThrow(
+                    () -> new UsernameNotFoundException("User '" + email + "' was not found")));
+        };
     }
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry
-                                .requestMatchers(HttpMethod.GET, AdminUserController.REST_URL,
-                                        VoteController.REST_URL + "/by-user").hasAnyRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.GET, RestaurantController.REST_URL,
-                                        ProfileUserController.REST_URL).hasAnyRole(Role.ADMIN.name(), Role.USER.name())
-                                .requestMatchers(HttpMethod.POST, VoteController.REST_URL).hasAnyRole(USER.name())
-                                .requestMatchers(HttpMethod.PUT, VoteController.REST_URL).hasAnyRole(USER.name())
-                                .requestMatchers(HttpMethod.GET, VoteController.REST_URL + "/").hasAnyRole(USER.name())
-                                .requestMatchers(HttpMethod.POST, RestaurantController.REST_URL, RestaurantController.REST_URL + "/*/menus",
-                                        AdminUserController.REST_URL).hasAnyRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.PUT, RestaurantController.REST_URL).hasAnyRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.DELETE, RestaurantController.REST_URL, VoteController.REST_URL + "/**")
-                                .hasAnyRole(Role.ADMIN.name())
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/swagger-resources/**").permitAll()
-                                .requestMatchers("/v3/api-docs/**").permitAll()
-                                .requestMatchers("/webjars/**").permitAll()
-                                .anyRequest().authenticated())
+                .securityMatcher("/api/**").authorizeHttpRequests(authz ->
+                        authz.requestMatchers("/api/*/admin/**").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.POST, "/api/*/profile").anonymous()
+                                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/api/**").authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(httpSecuritySessionManagementConfigurer ->
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

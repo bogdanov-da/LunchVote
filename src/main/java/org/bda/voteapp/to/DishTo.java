@@ -1,48 +1,27 @@
 package org.bda.voteapp.to;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Objects;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class DishTo extends NamedTo {
-    private Double price;
+    private Integer price;
     private Integer menuId;
 
-    public DishTo() {
-        super(null, null);
-    }
-
-    public DishTo(Integer id, String name, Double price) {
+    public DishTo(Integer id, String name, Integer price) {
         super(id, name);
         this.price = price;
         this.menuId = null;
     }
 
-    public DishTo(Integer id, String name, Double price, int menuId) {
+    public DishTo(Integer id, String name, Integer price, int menuId) {
         super(id, name);
         this.price = price;
-        this.menuId = menuId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public int getMenuId() {
-        return menuId;
-    }
-
-    public void setMenuId(int menuId) {
         this.menuId = menuId;
     }
 
@@ -51,11 +30,11 @@ public class DishTo extends NamedTo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DishTo dishTo = (DishTo) o;
-        return Objects.equals(id, dishTo.id) && Objects.equals(name, dishTo.name) && Objects.equals(price, dishTo.price) && Objects.equals(menuId, dishTo.menuId);
+        return Objects.equals(price, dishTo.price) && Objects.equals(menuId, dishTo.menuId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price, menuId);
+        return Objects.hash(price, menuId);
     }
 }

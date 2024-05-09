@@ -3,18 +3,19 @@ package org.bda.voteapp.to;
 import org.bda.voteapp.model.*;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
 public class Mapper {
     public MenuTo toTo(Menu menu) {
-        return new MenuTo(menu.getId(), menu.getDishes(), menu.getRestaurant().getId());
+        return new MenuTo(menu.getId(), menu.getDishes(), menu.getRestaurant().getId(), menu.getLocalDate());
     }
 
     public Menu toModel(MenuTo menuTo) {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(menuTo.getRestaurantId());
-        return new Menu(menuTo.getId(), menuTo.getDishes(), restaurant);
+        return new Menu(menuTo.getId(), menuTo.getDishes(), restaurant, menuTo.getDate());
     }
 
     public VoteTo toTo(Vote vote) {
@@ -30,6 +31,13 @@ public class Mapper {
     }
 
     public static User toModel(UserTo userTo) {
-        return new User(userTo.getName(), userTo.getEmail(), userTo.getPassword(), userTo.getRoles());
+        return new User(userTo.getName(), userTo.getEmail(), userTo.getPassword(), Collections.singleton(Role.USER));
+    }
+
+    public static User updateFromTo(User user, UserTo userTo) {
+        user.setName(userTo.getName());
+        user.setEmail(userTo.getEmail().toLowerCase());
+        user.setPassword(userTo.getPassword());
+        return user;
     }
 }

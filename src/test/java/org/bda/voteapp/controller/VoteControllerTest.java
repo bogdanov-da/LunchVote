@@ -1,7 +1,7 @@
 package org.bda.voteapp.controller;
 
-import org.bda.voteapp.controller.user.AdminUserController;
 import org.bda.voteapp.to.VoteTo;
+import org.bda.voteapp.util.JsonUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +10,12 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.*;
+import java.time.LocalDate;
 
 import static org.bda.voteapp.TestData.*;
 import static org.bda.voteapp.controller.VoteController.REST_URL;
-import static org.bda.voteapp.util.DateTimeUtil.setLocalTime;
+import static org.bda.voteapp.util.DateTimeUtil.setDefaultTime;
+import static org.bda.voteapp.util.DateTimeUtil.setFixedTime;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,13 +26,23 @@ public class VoteControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        newVote = new VoteTo(null, 100004, 100000, LocalDate.now());
+        vote3 = new VoteTo(4, 2, 4, LocalDate.now());
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_DETAILS)
-    void getByUserId() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/by-user?id=" + user.getId()))
+    @WithUserDetails(value = USER2_DETAILS)
+    void getToday() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "/today"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(VOTE_TO_MATCHER.contentJson(vote3));
+    }
+
+    @Test
+    @WithUserDetails(value = USER_DETAILS)
+    void getAll() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "/all-votes"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -51,10 +62,11 @@ public class VoteControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = USER_DETAILS)
     void create() throws Exception {
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + "?userId=" + user.getId() +
-                "&restaurantId=" + restaurant2.getId()))
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(restaurant2)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         VoteTo created = VOTE_TO_MATCHER.readFromJson(action);
@@ -66,78 +78,41 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_DETAILS)
-    void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + "/" + vote1.getId()))
-                .andDo(print())
-                .andExpect(status().isNoContent());
-
-        perform(MockMvcRequestBuilders.get(AdminUserController.REST_URL + "/" + vote1.getId()))
-                .andDo(print())
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithUserDetails(value = USER_DETAILS)
+    @WithUserDetails(value = USER2_DETAILS)
     void updateBefore11() throws Exception {
-        int userId = user.getId();
-        int restaurantId = restaurant2.getId();
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + "?userId=" + userId + "&restaurantId=" + restaurantId))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+        setFixedTime("10:59:59");
 
-        VoteTo created = VOTE_TO_MATCHER.readFromJson(action);
-        restaurantId = restaurant3.getId();
-
-        perform(MockMvcRequestBuilders.put(REST_URL + "/test?userId=" + userId + "&restaurantId=" + restaurantId
-                        + "&localTime=" + setLocalTime("10:59:59"))
-                .contentType(MediaType.APPLICATION_JSON))
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(restaurant3)))
                 .andExpect(status().isNoContent());
 
-        int newId = created.getId();
-        newVote.setId(newId);
-        newVote.setRestaurantId(restaurantId);
+        vote3.setRestaurantId(restaurant3.getId());
+        VOTE_TO_MATCHER.assertMatch(controller.get(vote3.getId()), vote3);
 
-        VOTE_TO_MATCHER.assertMatch(controller.get(created.getId()), newVote);
+        setDefaultTime();
     }
 
     @Test
-    @WithUserDetails(value = USER_DETAILS)
+    @WithUserDetails(value = USER2_DETAILS)
     void updateAfter11() throws Exception {
-        int userId = user.getId();
-        int restaurantId = restaurant2.getId();
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + "?userId=" + userId + "&restaurantId=" + restaurantId))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+        setFixedTime("11:00:01");
 
-        VoteTo created = VOTE_TO_MATCHER.readFromJson(action);
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(restaurant4)))
+                .andExpect(status().isUnprocessableEntity());
 
-        perform(MockMvcRequestBuilders.put(REST_URL + "/test?userId=" + userId + "&restaurantId=" + restaurantId
-                        + "&localTime=" + setLocalTime("11:00:01"))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable());
-
-        int newId = created.getId();
-        newVote.setId(newId);
-
-        VOTE_TO_MATCHER.assertMatch(controller.get(created.getId()), newVote);
+        setDefaultTime();
     }
 
     @Test
-    @WithUserDetails(value = USER_DETAILS)
-    void getByUserIdForbidden() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/by-user?id=" + user.getId()))
+    @WithUserDetails(value = USER2_DETAILS)
+    void createDuplicate() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(restaurant2)))
                 .andDo(print())
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithUserDetails(value = USER_DETAILS)
-    void deleteForbidden() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + "/" + vote1.getId()))
-                .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnprocessableEntity());
     }
 }

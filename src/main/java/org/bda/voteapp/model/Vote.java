@@ -2,13 +2,19 @@ package org.bda.voteapp.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 
+@Setter
+@Getter
 @Entity
-@Table(name = "vote", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"}, name = "vote_unique_user_date_idx")})
+@NoArgsConstructor
+@Table(name = "vote", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "local_date"}, name = "vote_unique_user_date_idx")})
 public class Vote extends AbstractBaseEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,11 +29,8 @@ public class Vote extends AbstractBaseEntity {
     private Restaurant restaurant;
 
     @NotNull
-    @Column(name = "date", nullable = false)
+    @Column(name = "local_date", nullable = false)
     private LocalDate date;
-
-    public Vote() {
-    }
 
     public Vote(User user, Restaurant restaurant) {
         this(null, user, restaurant);
@@ -38,30 +41,6 @@ public class Vote extends AbstractBaseEntity {
         this.user = user;
         this.restaurant = restaurant;
         this.date = LocalDate.now();
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     @Override

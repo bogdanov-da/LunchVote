@@ -1,5 +1,10 @@
 package org.bda.voteapp.util;
 
+import org.bda.voteapp.exception.IllegalRequestDataException;
+import org.bda.voteapp.exception.NotFoundException;
+
+import java.util.Optional;
+
 public class ValidationUtil {
     public static void checkNew(HasId bean) {
         if (!bean.isNew()) {
@@ -13,5 +18,10 @@ public class ValidationUtil {
         } else if (bean.id() != id) {
             throw new IllegalRequestDataException(bean + " must be with id=" + id);
         }
+    }
+
+    public static <T> T checkNotFound(Optional<T> object, int id) {
+        if(object.isEmpty()) throw new NotFoundException("Object with id " + id + " not found");
+        return object.get();
     }
 }

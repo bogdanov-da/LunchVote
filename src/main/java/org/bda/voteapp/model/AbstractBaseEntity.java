@@ -1,39 +1,30 @@
 package org.bda.voteapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bda.voteapp.util.HasId;
 
+@Setter
+@Getter
+@NoArgsConstructor
 @MappedSuperclass
 public class AbstractBaseEntity implements HasId {
-    public static final int START_SEQ = 100000;
-
     @Id
-    @Hidden
-    @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1, initialValue = START_SEQ)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     protected Integer id;
-
-    public AbstractBaseEntity() {
-    }
 
     public AbstractBaseEntity(Integer id) {
         this.id = id;
     }
 
-
     @JsonIgnore
     public boolean isNew() {
         return this.id == null;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     @Override

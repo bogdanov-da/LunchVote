@@ -4,15 +4,21 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.util.*;
 
+@Getter
 @Entity
-@Table(name = "menu", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date"}, name = "menu_unique_restaurant_date_idx")})
+@NoArgsConstructor
+@Table(name = "menu", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "local_date"}, name = "menu_unique_restaurant_date_idx")})
 public class Menu extends AbstractBaseEntity {
+    @Setter
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
@@ -25,15 +31,13 @@ public class Menu extends AbstractBaseEntity {
     private List<Dish> dishes;
 
     @NotNull
-    @Column(name = "date", nullable = false)
-    private final LocalDate date = LocalDate.now();
+    @Column(name = "local_date", nullable = false)
+    private LocalDate localDate;
 
-    public Menu() {
-    }
-
-    public Menu(Integer id, List<Dish> dishes, Restaurant restaurant) {
+    public Menu(Integer id, List<Dish> dishes, Restaurant restaurant, LocalDate localDate) {
         super(id);
         this.restaurant = restaurant;
+        this.localDate = localDate;
         setDishes(dishes);
     }
 
@@ -43,34 +47,8 @@ public class Menu extends AbstractBaseEntity {
         setDishes(dishes);
     }
 
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
-
-    public List<Dish> getDishes() {
-        return dishes;
-    }
-
     public void setDishes(List<Dish> dishes) {
         dishes.forEach(dish -> dish.setMenu(this));
         this.dishes = dishes.isEmpty() ? List.of() : new ArrayList<>(dishes);
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    @Override
-    public String toString() {
-        return "Menu{" +
-                "restaurant=" + restaurant +
-                ", dishes=" + dishes +
-                ", date=" + date +
-                ", id=" + id +
-                '}';
     }
 }

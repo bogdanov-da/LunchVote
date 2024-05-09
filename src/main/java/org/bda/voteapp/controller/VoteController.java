@@ -1,103 +1,93 @@
 package org.bda.voteapp.controller;
 
+import org.bda.voteapp.model.AuthUser;
 import org.bda.voteapp.model.Restaurant;
 import org.bda.voteapp.model.User;
 import org.bda.voteapp.model.Vote;
-import org.bda.voteapp.util.IllegalRequestDataException;
+import org.bda.voteapp.exception.IllegalRequestDataException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.bda.voteapp.repository.RestaurantRepository;
 import org.bda.voteapp.repository.UserRepository;
 import org.bda.voteapp.repository.VoteRepository;
 import org.bda.voteapp.to.VoteTo;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
-import static org.bda.voteapp.util.ValidationUtil.assureIdConsistent;
+import static org.bda.voteapp.util.DateTimeUtil.isBeforeTime;
+import static org.bda.voteapp.util.ValidationUtil.checkNotFound;
 
 @RestController
 @RequestMapping(value = VoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class VoteController extends BaseController {
 
-    public static final String REST_URL = "/api/v1/votes";
+    public static final String REST_URL = "/api/v1/profile/vote";
     private final VoteRepository voteRepository;
-
-    private final RestaurantRepository restaurantRepository;
-
     private final UserRepository userRepository;
 
     @Autowired
-    public VoteController(VoteRepository voteRepository, RestaurantRepository restaurantRepository, UserRepository userRepository) {
+    public VoteController(VoteRepository voteRepository, UserRepository userRepository) {
         this.voteRepository = voteRepository;
-        this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
     }
 
     @GetMapping("/{id}")
-    @Cacheable("votes")
     public VoteTo get(@PathVariable int id) {
-        Vote vote = voteRepository.findById(id).orElseThrow();
-        log.info("Get vote by id = {}", id);
+        Vote vote = checkNotFound(voteRepository.getById(id), id);
+        log.info("Get vote by id {}", id);
         return mapper.toTo(vote);
     }
 
-    @GetMapping("/by-user")
-    public List<VoteTo> getByUserId(@RequestParam int id) {
-        List<Vote> votes = voteRepository.getByUserId(id);
-        log.info("Get votes by userId = {}", id);
+    @GetMapping("/today")
+    public VoteTo getByUserToday(@AuthenticationPrincipal AuthUser authUser) {
+        int userId = authUser.id();
+        Vote vote = checkNotFound(voteRepository.getByDateAndUserId(LocalDate.now(), userId), userId);
+        log.info("Get votes today");
+        return mapper.toTo(vote);
+    }
+
+    @GetMapping("/all-votes")
+    public List<VoteTo> getAllByUser(@AuthenticationPrincipal AuthUser authUser) {
+        List<Vote> votes = voteRepository.getByUserId(authUser.id());
+        log.info("Get all votes");
         return votes.stream().map(mapper::toTo).toList();
     }
 
     @PostMapping
-    @CacheEvict(value = "votes", allEntries = true)
-    public VoteTo create(@RequestParam int userId, @RequestParam int restaurantId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        assureIdConsistent(user, userId);
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
-        assureIdConsistent(restaurant, restaurantId);
+    @Transactional
+    public ResponseEntity<VoteTo> create(@RequestBody Restaurant restaurant, @AuthenticationPrincipal AuthUser authUser) {
+        int userId = authUser.id();
+        if (voteRepository.getByDateAndUserId(LocalDate.now(), userId).isPresent())
+            throw new IllegalRequestDataException("User voted today");
+        User user = checkNotFound(userRepository.findById(userId), userId);
         Vote vote = new Vote(user, restaurant);
         Vote created = voteRepository.save(vote);
         vote.setId(created.getId());
-        log.info("Vote by user {} for restaurant {}", userId, restaurantId);
-        return mapper.toTo(vote);
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id) {
-        log.info("Delete vote by id {}", id);
-        voteRepository.deleteById(id);
+        log.info("Vote by user {} for restaurant {}", userId, restaurant);
+        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(REST_URL + "/{id}").build().toUri();
+        return ResponseEntity.created(uriOfNewResource).body(mapper.toTo(vote));
     }
 
     @PutMapping
-    @CacheEvict(value = "votes", allEntries = true)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestParam int userId, @RequestParam int restaurantId) {
-        updateForTest(userId, restaurantId, LocalTime.now());
-    }
-
-    @PutMapping("/test")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestParam int userId, @RequestParam int restaurantId, @RequestParam LocalTime localTime) {
-        updateForTest(userId, restaurantId, localTime);
-    }
-
-    private void updateForTest(int userId, int restaurantId, LocalTime localTime) {
-        Vote vote = voteRepository.getByDateAndUserId(LocalDate.now(), userId).orElseThrow();
-        if (localTime.isBefore(LocalTime.of(11, 0))) {
-            Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
-            assureIdConsistent(restaurant, restaurantId);
+    @Transactional
+    public void update(@RequestBody Restaurant restaurant, @AuthenticationPrincipal AuthUser authUser) {
+        int userId = authUser.id();
+        if (isBeforeTime()) {
+            Vote vote = checkNotFound(voteRepository.getByDateAndUserId(LocalDate.now(), userId), userId);
             vote.setRestaurant(restaurant);
             voteRepository.save(vote);
-            log.info("Update vote for user {} on restaurant {}", userId, restaurantId);
+            log.info("Update vote for user {} on restaurant {}", userId, restaurant.getId());
         } else {
-            log.debug("User {} tried vote in time {}", userId, localTime);
+            log.debug("User {} tried vote in time", userId);
             throw new IllegalRequestDataException("It's too late for change your opinion. Let's try tomorrow.");
         }
     }

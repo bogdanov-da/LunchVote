@@ -10,6 +10,8 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Map;
+
 import static org.bda.voteapp.TestData.*;
 import static org.bda.voteapp.controller.user.AdminUserController.REST_URL;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -25,9 +27,9 @@ public class AdminUserControllerTest extends AbstractControllerTest {
     void create() throws Exception {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(newUser)))
+                .content(JsonUtil.writeAdditionProps(newUser, Map.of("password", newUser.getPassword()))))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         User created = USER_MATCHER.readFromJson(action);
@@ -61,14 +63,14 @@ public class AdminUserControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_MATCHER.contentJson(user, admin, guest));
+                .andExpect(USER_MATCHER.contentJson(user, admin, guest, phil));
     }
 
     @Test
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + "/" + user.getId()))
                 .andExpect(status().isNoContent());
-        USER_MATCHER.assertMatch(adminUserController.getAll(null, null), admin, guest);
+        USER_MATCHER.assertMatch(adminUserController.getAll(null, null), admin, guest, phil);
     }
 
     @Test

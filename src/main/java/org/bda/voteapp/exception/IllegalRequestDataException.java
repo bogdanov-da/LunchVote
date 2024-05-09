@@ -1,4 +1,4 @@
-package org.bda.voteapp.util;
+package org.bda.voteapp.exception;
 
 public class IllegalRequestDataException extends RuntimeException {
     public IllegalRequestDataException(String msg) {

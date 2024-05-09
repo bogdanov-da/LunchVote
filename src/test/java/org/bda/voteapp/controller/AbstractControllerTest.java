@@ -1,5 +1,6 @@
 package org.bda.voteapp.controller;
 
+import org.bda.voteapp.to.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class AbstractControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    public Mapper mapper;
 
     protected ResultActions perform(MockHttpServletRequestBuilder builder) throws Exception {
         return mockMvc.perform(builder);

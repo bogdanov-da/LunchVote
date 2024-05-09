@@ -31,7 +31,6 @@ spring:
     init:
       mode: always
       platform: hsql
-      schema-locations: classpath:db/schema.sql
       data-locations: classpath:db/populateDB.sql
 server:
   port: 8080

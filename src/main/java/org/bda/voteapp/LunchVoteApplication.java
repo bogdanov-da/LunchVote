@@ -20,7 +20,7 @@ import org.springframework.cache.annotation.EnableCaching;
         info = @Info(
                 title = "Lunch Vote Application REST API doc",
                 version = "1.0",
-                description = "admin - admin@gmail.com/admin_password, user - user@gmail.com/user_password"
+                description = "admin - admin@gmail.com/admin, user - user@gmail.com/user"
         ),
         security = @SecurityRequirement(name = "basicAuth")
 )
